@@ -1,6 +1,9 @@
 name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -24,12 +27,28 @@ jobs:
         name: python-package-distributions
         path: dist/
 
+  lookup_tag:
+    name: Lookup version tag
+    runs-on: ubuntu-latest
+    outputs:
+      version_number: ${{ steps.version_number.outputs.VERSION_NUMBER }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Is last commit bump version
+        id: version_number
+        continue-on-error: true
+        run: |
+          OUTPUT=$(git show -q | grep -o "Bump version from v[0-9.]* to v[0-9.]*" | awk '{print $NF}') &&
+          echo "VERSION_NUMBER=$OUTPUT" >> $GITHUB_OUTPUT
+          echo $OUTPUT
+
   publish-to-pypi:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI
-    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    if: ${{ needs.lookup_tag.outputs.version_number != '' }}
     needs:
-    - build
+      - lookup_tag
+      - build
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -85,5 +104,5 @@ jobs:
       # sigstore-produced signatures and certificates.
       run: >-
         gh release upload
-        '${{ github.ref_name }}' dist/**
+        '${{ needs.lookup_tag.outputs.version_number }}' dist/**
         --repo '${{ github.repository }}'
