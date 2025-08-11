@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -33,7 +33,7 @@ jobs:
     outputs:
       version_number: ${{ steps.version_number.outputs.VERSION_NUMBER }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Is last commit bump version
         id: version_number
         continue-on-error: true
