@@ -13,7 +13,7 @@ jobs:
       contents: read
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
@@ -35,7 +35,7 @@ jobs:
     outputs:
       version_number: ${{ steps.version_number.outputs.VERSION_NUMBER }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Is last commit bump version
         id: version_number
         continue-on-error: true
